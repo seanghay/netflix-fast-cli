@@ -79,15 +79,15 @@ await Promise.all(
         avg.push(bytes * 8 * 10);
         const averageBits = avg.reduce((a, b) => a + b, 0) / avg.length;
         const latency = ms(Math.round(responseTimeSamples.reduce((a, b) => a + b) / responseTimeSamples.length), { long: true })
-        const spin = offset => chalk.gray(`${spinner[(tick + offset) % spinner.length]}`);
+        const spin = offset => chalk.dim(`${spinner[(tick + offset) % spinner.length]}`);
         clear(true)
 
         const timeElapsed = ms(Date.now() - elapsed);
 
         console.log(chalk.red.bold("FAST.COM"))
-        console.log(spin(2) + chalk.black(' Elapsed\t') + timeElapsed);
-        console.log(spin(3) + chalk.black(' Latency\t') + latency);
-        console.log(spin(4) + chalk.black(' Avg. Speed\t') + Math.round(averageBits / 1000000) + " Mbps ");
+        console.log(spin(2) + chalk.yellow(' Elapsed\t') + timeElapsed);
+        console.log(spin(3) + chalk.yellow(' Latency\t') + latency);
+        console.log(spin(4) + chalk.yellow(' Avg. Speed\t') + Math.round(averageBits / 1000000) + " Mbps ");
         
         lastReport = {
           averageBits,
