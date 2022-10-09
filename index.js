@@ -63,55 +63,61 @@ let lastReport = {};
 
 await Promise.all(
   targets.map(async ({ url }) => {
-    const { data: stream } = await axios.get(url, { responseType: 'stream', signal: controller.signal });
-    let responseTime = performance.now();
-
-    stream.on('data', buffer => {
-
-      bytes += buffer.length;
-
-      responseTime = performance.now() - responseTime;
-      responseTimeSamples.push(responseTime)
-      responseTime = performance.now()
-
-      if (Date.now() - startedAt > 100) {
-        tick++;
-        avg.push(bytes * 8 * 10);
-        const averageBits = avg.reduce((a, b) => a + b, 0) / avg.length;
-        const latency = ms(Math.round(responseTimeSamples.reduce((a, b) => a + b) / responseTimeSamples.length), { long: true })
-        const spin = offset => chalk.dim(`${spinner[(tick + offset) % spinner.length]}`);
-        clear(true)
-
-        const timeElapsed = ms(Date.now() - elapsed);
-
-        console.log(chalk.red.bold("FAST.COM"))
-        console.log(spin(2) + chalk.yellow(' Elapsed\t') + timeElapsed);
-        console.log(spin(3) + chalk.yellow(' Latency\t') + latency);
-        console.log(spin(4) + chalk.yellow(' Avg. Speed\t') + Math.round(averageBits / 1000000) + " Mbps ");
-        
-        lastReport = {
-          averageBits,
-          latency,
-          timeElapsed
+    try {
+      const { data: stream } = await axios.get(url, { responseType: 'stream', signal: controller.signal });
+      let responseTime = performance.now();
+  
+      stream.on('data', buffer => {
+  
+        bytes += buffer.length;
+  
+        responseTime = performance.now() - responseTime;
+        responseTimeSamples.push(responseTime)
+        responseTime = performance.now()
+  
+        if (Date.now() - startedAt > 100) {
+          tick++;
+          avg.push(bytes * 8 * 10);
+          const averageBits = avg.reduce((a, b) => a + b, 0) / avg.length;
+          const latency = ms(Math.round(responseTimeSamples.reduce((a, b) => a + b) / responseTimeSamples.length), { long: true })
+          const spin = offset => chalk.dim(`${spinner[(tick + offset) % spinner.length]}`);
+          clear(true)
+  
+          const timeElapsed = ms(Date.now() - elapsed);
+  
+          console.log(chalk.red.bold("FAST.COM"))
+          console.log(spin(2) + chalk.yellow(' Elapsed\t') + timeElapsed);
+          console.log(spin(3) + chalk.yellow(' Latency\t') + latency);
+          console.log(spin(4) + chalk.yellow(' Avg. Speed\t') + Math.round(averageBits / 1000000) + " Mbps ");
+          
+          lastReport = {
+            averageBits,
+            latency,
+            timeElapsed
+          }
+  
+          bytes = 0;
+          startedAt += 100;
         }
-
-        bytes = 0;
-        startedAt += 100;
+      });
+      stream.on('end', () => {
+        controller.abort();
+        const {timeElapsed, latency, averageBits}  = lastReport;
+        const spin = () => chalk.green("✔");
+        console.clear()
+        console.log(chalk.red.bold("FAST.COM"))
+        console.log(spin(2) + chalk.green(' Elapsed\t') + timeElapsed);
+        console.log(spin(3) + chalk.green(' Latency\t') + latency);
+        console.log(spin(4) + chalk.green(' Avg. Speed\t') + Math.round(averageBits / 1000000) + " Mbps ");
+        console.log('')
+        console.log(chalk.green.bold('Your internet speed is ' + Math.round(averageBits / 1000000) + " Mbps "))
+        console.log('')
+      })
+    } catch(e) {
+      if (!axios.isAxiosError(e)) {
+        throw e;
       }
-    });
-    stream.on('end', () => {
-      controller.abort();
-      const {timeElapsed, latency, averageBits}  = lastReport;
-      const spin = () => chalk.green("✔");
-      console.clear()
-      console.log(chalk.red.bold("FAST.COM"))
-      console.log(spin(2) + chalk.green(' Elapsed\t') + timeElapsed);
-      console.log(spin(3) + chalk.green(' Latency\t') + latency);
-      console.log(spin(4) + chalk.green(' Avg. Speed\t') + Math.round(averageBits / 1000000) + " Mbps ");
-      console.log('')
-      console.log(chalk.green.bold('Your internet speed is ' + Math.round(averageBits / 1000000) + " Mbps "))
-      console.log('')
-    })
+    }
   })
 )
 
