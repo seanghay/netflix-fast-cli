@@ -1,11 +1,14 @@
 {
   "name": "fast.com",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A fast.com cli",
   "bin": "./index.js",
   "type": "module",
   "main": "index.js",
-  "keywords": ["fast", "speedtest"],
+  "keywords": [
+    "fast",
+    "speedtest"
+  ],
   "author": "Seanghay Yath",
   "repository": "seanghay/netflix-fast-cli",
   "license": "Apache-2.0",
