@@ -104,7 +104,7 @@ await Promise.all(
         controller.abort();
         const {timeElapsed, latency, averageBits}  = lastReport;
         const spin = () => chalk.green("✔");
-        console.clear()
+        clear(true)
         console.log(chalk.red.bold("FAST.COM"))
         console.log(spin(2) + chalk.green(' Elapsed\t') + timeElapsed);
         console.log(spin(3) + chalk.green(' Latency\t') + latency);
