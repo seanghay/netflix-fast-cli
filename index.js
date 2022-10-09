@@ -3,7 +3,6 @@ import { load } from 'cheerio'
 import axios from 'axios'
 import { parse } from 'acorn';
 import { simple } from 'acorn-walk'
-import prettyBytes from 'pretty-bytes'
 import { performance } from 'node:perf_hooks'
 import ms from 'ms'
 import chalk from 'chalk'
