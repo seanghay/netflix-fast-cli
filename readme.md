@@ -8,7 +8,7 @@ A CLI version of Netflix FAST.COM (Unofficial).
 npx fast.com@latest
 ```
 
-## How does it works?
+## How does it work?
 
 1. Send a GET request to `https://fast.com/`
 2. Parse the document using `cheerio`
